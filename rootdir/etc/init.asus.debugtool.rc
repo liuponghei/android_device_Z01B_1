@@ -1,0 +1,309 @@
+# init.asus.debug.rc
+on early-init
+    mkdir /asdf
+
+on fs
+    wait /dev/block/bootdevice/by-name/asdf
+    mount ext4 /dev/block/bootdevice/by-name/asdf /asdf nosuid nodev barrier=1
+    chmod 0777 /asdf
+    restorecon_recursive /asdf
+    start check_last
+    
+on post-fs-data
+# ASUS_BSP +++ [thomas]Add logcat_log folder
+	mkdir /data/logcat_log 0775 system system
+# ASUS_BSP --- [thomas]Add logcat_log folder
+
+#ASUS_BSP+++ [thomas] Add asusdebug
+    chmod 0777 /proc/asusdebug
+    write /proc/asusdebug load
+    write /proc/asusdebug get_lastshutdown_log
+#ASUS_BSP--- [thomas] Add asusdebug
+
+# ASUS_BSP +++ Ken_Gan "Chang owner&mode for AsusLogTool"
+    chown root system /proc/bootinfo
+# ASUS_BSP--- Ken_Gan "Chang owner&mode for AsusLogTool"
+    mkdir /data/log
+    mkdir /data/anr
+    mkdir /data/tombstones
+    mkdir /data/media/asus_log
+
+    mkdir /data/ramdump
+    chown system system /data/ramdump
+    restorecon /data/ramdump
+    #chmod 0775 /data/ramdump
+
+    chown system system /data/log
+    chown system system /data/anr
+    chown system system /data/tombstones
+    chown sdcard_rw sdcard_rw /data/media/asus_log
+   
+#    chmod 0775 /data/log ==>move to init.asus.rc
+    chmod 0775 /data/anr
+    chmod 0775 /data/tombstones
+    chmod 0755 /data/media/asus_log
+#enable zram
+    swapon_all fstab.qcom
+
+
+#service block start ...
+service checkcmdl /system/etc/init.asus.check_cmdline.sh
+	class late_start
+    user root
+    group root
+    #disabled
+    oneshot
+    seclabel u:r:savelogmtp:s0
+
+# ASUS_BSP+++ [thomas]Add asus_ramdump and asus_kernelmsg services
+service asus_ramdump /system/etc/init.asus.ramdump.sh
+	class late_start
+    user root
+    group root
+    disabled
+    oneshot
+seclabel u:r:savelogmtp:s0
+
+on property:persist.asuslog.qpst.enable=1
+    write /sys/module/msm_poweroff/parameters/download_mode 1
+
+on property:persist.asuslog.qpst.enable=0
+    write /sys/module/msm_poweroff/parameters/download_mode 0
+
+on property:persist.asus.ramdump=0
+	start asus_ramdump
+
+on property:persist.asus.ramdump=1
+	start asus_ramdump
+
+service asus_kernelmsg /system/etc/init.asus.kernelmessage.sh
+	class late_start
+    user root
+    group root
+    disabled
+    oneshot
+seclabel u:r:audio_debug:s0
+
+on property:persist.asus.kernelmessage=0
+	start asus_kernelmsg
+
+on property:persist.asus.kernelmessage=7
+	start asus_kernelmsg
+
+# ASUS_BSP--- [thomas]Add asus_ramdump and asus_kernelmsg services
+
+service savelogmtp /system/etc/savelogmtp.sh
+    class late_start
+    user root
+    group sdcard_rw
+    oneshot
+    disabled
+seclabel u:r:dumpstate:s0
+# ASUS_BSP+++ [thomas]Add savelogmtp services
+
+#logcommand
+service logcommand /system/bin/logcommand
+    class main
+    disabled
+    oneshot
+seclabel u:r:savelogmtp:s0
+
+service mbnservice /system/etc/init.asus.mbn.sh
+    class late_start
+    user root
+    group sdcard_rw
+    oneshot
+    disabled
+seclabel u:r:savelogmtp:s0
+
+on property:persist.asus.savelogs=*
+	start savelogs
+
+service savelogs /system/etc/savelogs.sh
+    class late_start
+    user root
+    group sdcard_rw
+    oneshot
+    disabled
+seclabel u:r:savelogmtp:s0
+
+service check-datalog /system/bin/sh /system/etc/init.asus.checkdatalog.sh
+    class late_start
+    user root
+    oneshot
+seclabel u:r:savelogmtp:s0
+
+on property:debug.asus.startlogcat=1
+    setprop persist.asus.startlog 1
+    setprop logd.klogd true
+	start logd
+	start logd-reinit
+    start check-datalog
+    start console
+    write /sys/module/msm_rtb/parameters/enable 1
+	config_sys 8E8BDCA5
+
+on property:debug.asus.startlogcat=0
+    setprop persist.asus.startlog 0
+    start check-datalog
+    stop  console
+    write /sys/module/msm_rtb/parameters/enable 0
+    config_sys  868CF5D9
+
+on property:persist.asus.asusklog=0
+    write /proc/asusklog 0
+
+on property:persist.asus.asusklog=1
+    write /proc/asusklog 1
+
+service saveramdump /system/etc/saveramdump.sh
+    class late_start
+    oneshot
+    disabled
+
+#log_main log_system
+service logcat /system/bin/logcat -a -b kernel -b main -b system -b crash -r 10000 -n 20 -v threadtime -f /data/logcat_log/logcat.txt
+	class late_start
+	disabled
+seclabel u:r:savelogmtp:s0
+#log_radio
+service logcat-radio /system/bin/logcat -r 10000 -b radio -n 20 -v time -f /data/logcat_log/logcat-radio.txt
+	class late_start
+	disabled
+seclabel u:r:savelogmtp:s0
+#log_events
+service logcat-events /system/bin/logcat -r 10000 -b events -n 20 -v threadtime -f /data/logcat_log/logcat-events.txt
+	class late_start
+	disabled
+seclabel u:r:savelogmtp:s0
+
+#add service for modem and tcpdump
+service logTcpdump /system/bin/dumps tcpdump
+    user root
+    group root
+    class main
+    disabled
+seclabel u:r:savelogmtp:s0
+
+on property:persist.asuslog.tcpdump.enable=1
+    start logTcpdump
+
+on property:persist.asuslog.tcpdump.enable=0
+    stop logTcpdump
+
+service diag_mdlog /system/bin/sh /system/etc/modemlog.sh
+    class late_start
+    disabled
+    oneshot
+
+#service ss_ramdump /system/bin/subsystem_ramdump
+#    class main
+#    user system
+#    group system
+#    disabled
+
+on property:persist.asuslog.qxdmlog.enable=1
+#    insmod /system/lib/modules/diagchar.ko
+    start diag_mdlog
+
+on property:persist.asuslog.qxdmlog.enable=0
+    start diag_mdlog_stop
+    write /sys/power/wake_unlock diag_fwrite
+
+service ssrsetup_related /system/bin/ssr_setup modem
+    user root
+    group root
+    class main
+    disabled
+    oneshot
+
+service ssrsetup_system /system/bin/ssr_setup
+    user root
+    group root
+    class main
+    disabled
+    oneshot
+
+on property:persist.asuslog.modem.ramdumps=1
+#    insmod /system/lib/modules/diagchar.ko
+    start ssrsetup_related 
+    write /sys/module/subsystem_restart/parameters/enable_ramdumps 1
+    start ss_ramdump
+
+on property:persist.asuslog.modem.ramdumps=0
+    write /sys/module/subsystem_restart/parameters/enable_ramdumps 0
+    stop ss_ramdump
+    start ssrsetup_system
+
+#ASUS_BSP: [ASDF] Check for LastShutdown Logs +++
+service check_last /system/bin/sh /system/etc/init.asus.check_last.sh
+    user root
+    disabled
+    oneshot
+seclabel u:r:savelogmtp:s0
+#ASUS_BSP: [ASDF] Check for LastShutdown Logs ---
+#ASUS_BSP: [ASDF] Check for Abnormal Shutdown Logs +++
+service asus_chk_asdf /system/bin/sh /system/etc/init.asus.check_asdf.sh
+    user root
+    group sdcard_rw
+    disabled
+    oneshot
+seclabel u:r:savelogmtp:s0
+
+on property:sys.boot_completed=1
+    start asus_chk_asdf
+
+on property:persist.radio.check_asdf=*
+    start asus_chk_asdf
+#ASUS_BSP: [ASDF] Check for Abnormal Shutdown Logs ---
+on property:persist.asuslog.report.folder=1
+    mkdir /data/media/0/ASUS
+    mkdir /data/media/0/ASUS/LogUploader
+    chmod 777 /data/media/0/ASUS
+    chmod 777 /data/media/0/ASUS/LogUploader
+    
+# ASUS_BSP Freeman : Add for sysconf +++
+on property:sys.config.klog=1
+    config_sys 7C89FDAB
+
+on property:sys.config.klog=0
+    config_sys 79ACB239
+
+on property:sys.config.uartlog=1
+    config_sys 7E8BDCA5
+
+on property:sys.config.uartlog=0
+    config_sys 768CF5D9
+
+on property:sys.config.ssn=*
+    config_sys 75892545 ${sys.config.ssn}
+
+on property:sys.config.print=1
+    config_sys 12349876
+
+on property:sys.config.qpst=0
+    config_sys 10001000
+on property:sys.config.qpst=1
+    config_sys 10001001
+
+on property:sys.config.isn=*
+    config_sys 10011000 ${sys.config.isn}
+
+on property:persist.sys.setupwizard.active=true
+    config_sys 10001006
+on property:persist.sys.setupwizard.active=false
+    config_sys 10001005
+
+service asus_setuartlog /system/etc/init.asus.setuartlog.sh
+    user root
+    group root
+    disabled
+    oneshot
+seclabel u:r:savelogmtp:s0
+
+on property:persist.asus.audbg=0
+    start asus_setuartlog
+
+on property:persist.asus.audbg=1
+    start asus_setuartlog
+# ASUS_BSP Freeman : Add for sysconf ---
