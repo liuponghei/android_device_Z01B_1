@@ -112,8 +112,8 @@ BOARD_CHARGER_DISABLE_INIT_BLANK := true
 # CMHW
 BOARD_USES_CYANOGEN_HARDWARE := true
 BOARD_HARDWARE_CLASS += \
-    hardware/cyanogen \
-    $(VENDOR_PATH)/cm
+    hardware/cyanogen/cmhw \
+    $(VENDOR_PATH)/cmhw
 TARGET_TAP_TO_WAKE_NODE := "/sys/devices/soc/78b7000.i2c/i2c-3/3-005d/dclick_mode"
 
 # Crypto
