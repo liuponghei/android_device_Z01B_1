@@ -197,8 +197,10 @@ PRODUCT_COPY_FILES += \
 # Display
 PRODUCT_PACKAGES += \
     gralloc.msm8937 \
+    copybit.msm8937 \
     hwcomposer.msm8937 \
     memtrack.msm8937 \
+    liboverlay \
     libtinyxml
 
 # Connectivity Engine support
@@ -235,8 +237,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/gps/etc/sap.conf:system/etc/sap.conf \
     $(LOCAL_PATH)/gps/etc/xtwifi.conf:system/etc/xtwifi.conf
 
-PRODUCT_BOOT_JARS += \
-    com.qti.location.sdk
 # Ebtables
 PRODUCT_PACKAGES += \
     ebtables \
@@ -668,7 +668,7 @@ PRODUCT_PACKAGES += \
     rmnetcli
 
 # Doze
-#PRODUCT_PACKAGES += ZenfoneDoze
+PRODUCT_PACKAGES += ZenfoneDoze
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 
