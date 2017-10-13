@@ -1,11 +1,12 @@
 #
-# Copyright 2014 The Android Open-Source Project
+# Copyright (C) 2016 The CyanogenMod Project
+#           (C) 2017 The LineageOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,29 +15,7 @@
 # limitations under the License.
 #
 
-# Use the non-open-source parts, if they're present
--include vendor/asus/Z01B/BoardConfigVendor.mk
-
-
-VENDOR_PATH := device/asus/Z01B
-
-BOARD_VENDOR := asus-qcom
-
-TARGET_SPECIFIC_HEADER_PATH := $(VENDOR_PATH)/include
-
-# Asserts
-TARGET_OTA_ASSERT_DEVICE := Z01B_1
-
-# Use Snapdragon LLVM, if available
-TARGET_USE_SDCLANG := true
-
-# Platform
-TARGET_BOARD_PLATFORM := msm8937
-TARGET_BOARD_PLATFORM_GPU := qcom-adreno505
-
-# Bootloader
-TARGET_BOOTLOADER_BOARD_NAME := msm8937
-TARGET_NO_BOOTLOADER := true
+DEVICE_PATH := device/asus/Z01B
 
 # Architecture
 TARGET_ARCH := arm64
@@ -45,158 +24,177 @@ TARGET_CPU_ABI := arm64-v8a
 TARGET_CPU_ABI2 :=
 TARGET_CPU_VARIANT := cortex-a53
 
+# Second architecture
 TARGET_2ND_ARCH := arm
 TARGET_2ND_ARCH_VARIANT := armv7-a-neon
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
 
+TARGET_BOARD_PLATFORM := msm8937
+TARGET_BOARD_PLATFORM_GPU := qcom-adreno505
+
+# Binder
 TARGET_BOARD_SUFFIX := _64
 TARGET_USES_64_BIT_BINDER := true
-TARGET_CPU_CORTEX_A53 := true
 
-# Kernel
-BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 
-BOARD_KERNEL_CMDLINE += androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 
-BOARD_KERNEL_CMDLINE += lpm_levels.sleep_disabled=1 androidboot.bootdevice=7824900.sdhci 
-BOARD_KERNEL_CMDLINE += earlycon=msm_hsl_uart,0x78b0000
-BOARD_KERNEL_PAGESIZE    := 2048
-BOARD_KERNEL_BASE        := 0x80000000
-BOARD_KERNEL_TAGS_OFFSET := 0x00000100
-BOARD_RAMDISK_OFFSET     := 0x01000000
+# Bootloader
+TARGET_BOOTLOADER_BOARD_NAME := msm8937
+TARGET_NO_BOOTLOADER := true
+
+# kernel
+BOARD_KERNEL_BASE := 0x80000000
+BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 androidboot.bootdevice=7824900.sdhci earlycon=msm_hsl_uart,0x78B0000
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
+BOARD_KERNEL_PAGESIZE :=  2048
+BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x01000000 --second_offset 0x00f00000 --tags_offset 0x00000100
 TARGET_KERNEL_APPEND_DTB := true
-TARGET_KERNEL_ARCH := arm64
-TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_KERNEL_SOURCE := kernel/asus/Z01B
 TARGET_KERNEL_CONFIG := zc551kl-userdebug_defconfig
-TARGET_PREBUILT_KERNEL := $(VENDOR_PATH)/kernel
+
+
+# ANT
+BOARD_ANT_WIRELESS_DEVICE := "vfs-prerelease"
 
 # Audio
-# for TFA98XX {
-BOARD_USES_LEGACY_ALSA_AUDIO := true
-AUDIO_FEATURE_ENABLED_TFA98XX := true
-# for TFA98XX }
-BOARD_USES_ALSA_AUDIO := true
-USE_CUSTOM_AUDIO_POLICY := 1
-USE_XML_AUDIO_POLICY_CONF := 1
+AUDIO_FEATURE_ENABLED_ACDB_LICENSE := true
+AUDIO_FEATURE_ENABLED_ANC_HEADSET := true
+AUDIO_FEATURE_ENABLED_AUDIOSPHERE := true
 AUDIO_FEATURE_ENABLED_COMPRESS_VOIP := true
+AUDIO_FEATURE_ENABLED_CUSTOMSTEREO := true
+AUDIO_FEATURE_ENABLED_DEV_ARBI := true
+AUDIO_FEATURE_ENABLED_DS2_DOLBY_DAP := true
 AUDIO_FEATURE_ENABLED_EXTN_FORMATS := true
-AUDIO_FEATURE_ENABLED_FM_POWER_OPT := true
+AUDIO_FEATURE_ENABLED_FLAC_OFFLOAD := true
 AUDIO_FEATURE_ENABLED_FLUENCE := true
 AUDIO_FEATURE_ENABLED_HFP := true
+AUDIO_FEATURE_ENABLED_KPI_OPTIMIZE := true
 AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS := true
 AUDIO_FEATURE_ENABLED_PCM_OFFLOAD := true
 AUDIO_FEATURE_ENABLED_PCM_OFFLOAD_24 := true
-AUDIO_FEATURE_ENABLED_FLAC_OFFLOAD := true
+AUDIO_FEATURE_ENABLED_PROXY_DEVICE := true
+AUDIO_USE_LL_AS_PRIMARY_OUTPUT := true
+BOARD_SUPPORTS_SOUND_TRIGGER := true
+BOARD_USES_ALSA_AUDIO := true
+USE_CUSTOM_AUDIO_POLICY := 1
 
 # Bluetooth
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(VENDOR_PATH)/bluetooth
-BOARD_HAVE_BLUETOOTH := true
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
 BOARD_HAVE_BLUETOOTH_QCOM := true
 BLUETOOTH_HCI_USE_MCT := true
-QCOM_BT_USE_BTNV := true
 QCOM_BT_USE_SMD_TTY := true
-
-# ANT+
-BOARD_ANT_WIRELESS_DEVICE := "qualcomm-smd"
 
 # Camera
 USE_DEVICE_SPECIFIC_CAMERA := true
 BOARD_QTI_CAMERA_32BIT_ONLY := true
 
 # Charger
-BACKLIGHT_PATH := /sys/class/leds/lcd-backlight/brightness
-BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_CHARGER_DISABLE_INIT_BLANK := true
+BOARD_CHARGER_ENABLE_SUSPEND := true
 
-# CMHW
+# Clang
+TARGET_USE_SDCLANG := true
+
+# CPUsets
+#ENABLE_CPUSETS := true
+
+# CM Hardware
 BOARD_USES_CYANOGEN_HARDWARE := true
 BOARD_HARDWARE_CLASS += \
-    hardware/lineage/intefaces \
-    $(VENDOR_PATH)/cmhw
-TARGET_TAP_TO_WAKE_NODE := "/sys/devices/soc/78b7000.i2c/i2c-3/3-005d/dclick_mode"
+    hardware/lineage
 
-# Crypto
-TARGET_HW_DISK_ENCRYPTION := true
-
-# CNE and DPM
+# CNE / DPM
 BOARD_USES_QCNE := true
 
-# Display
-USE_OPENGL_RENDERER := true
-NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
-OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
+# Dexpreopt
+ifeq ($(HOST_OS),linux)
+  ifneq ($(TARGET_BUILD_VARIANT),eng)
+    ifeq ($(WITH_DEXPREOPT),)
+      WITH_DEXPREOPT := true
+    endif
+  endif
+endif
+WITH_DEXPREOPT_BOOT_IMG_ONLY ?= true
+
+#Display
 MAX_EGL_CACHE_KEY_SIZE := 12*1024
 MAX_EGL_CACHE_SIZE := 2048*1024
-MAX_VIRTUAL_DISPLAY_DIMENSION := 4096
-BOARD_EGL_CFG := $(VENDOR_PATH)/configs/egl.cfg
-BOARD_USES_ADRENO := true
-TARGET_USES_ION := true
-TARGET_USES_NEW_ION_API :=true
+NUM_FRAMEBUFFER_SURFACE_BUFFERS := 3
+OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
 TARGET_USES_C2D_COMPOSITION := true
+TARGET_USES_ION := true
+USE_OPENGL_RENDERER := true
 TARGET_CONTINUOUS_SPLASH_ENABLED := true
-TARGET_USES_OVERLAY := true
-TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
+
+# Encryption
+TARGET_HW_DISK_ENCRYPTION := true
 
 # FM
 AUDIO_FEATURE_ENABLED_FM_POWER_OPT := true
 BOARD_HAVE_QCOM_FM := true
 TARGET_QCOM_NO_FM_FIRMWARE := true
 
-# Init
-TARGET_IGNORE_RO_BOOT_SERIALNO := true
-TARGET_INIT_VENDOR_LIB := libinit_zenfone3
-TARGET_RECOVERY_DEVICE_MODULES := libinit_zenfone3
-TARGET_PLATFORM_DEVICE_BASE := /devices/soc/
+# Filesystem
+TARGET_ANDROID_FILESYSTEM_CONFIG_H := $(LOCAL_PATH)/android_filesystem_config.h
 
-# Keymaster
-TARGET_PROVIDES_KEYMASTER := true
+# GPS
+USE_DEVICE_SPECIFIC_GPS := true
+TARGET_NO_RPC := true
+
+# Init
+TARGET_INIT_VENDOR_LIB := libinit_zenfone3
+TARGET_PLATFORM_DEVICE_BASE := /devices/soc/
+TARGET_RECOVERY_DEVICE_MODULES := libinit_zenfone3
+
+# Keystore
 TARGET_KEYMASTER_WAIT_FOR_QSEE := true
 
-# Lights
-TARGET_PROVIDES_LIBLIGHT := true
-
-# Media
-TARGET_USES_MEDIA_EXTENSIONS := true
-TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
+# Malloc
+MALLOC_SVELTE := true
 
 # Partitions
 BOARD_FLASH_BLOCK_SIZE := 131072
-#BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864        #    32768 * 1024 mmcblk0p51
 BOARD_CACHEIMAGE_PARTITION_SIZE := 134217728      #   131072 * 1024 mmcblk0p23
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 67108864    #    32768 * 1024 mmcblk0p52
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 4026531840    #  3932160 * 1024 mmcblk0p56
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 26201799680 # 25587695 * 1024 mmcblk0p58
+TARGET_USERIMAGES_USE_EXT4 := true
+TARGET_USERIMAGES_USE_F2FS := true
+BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
 
-# Qualcomm support
-BOARD_USES_QC_TIME_SERVICES := true
+
+# Peripheral manager
+TARGET_PER_MGR_ENABLED := true
+
+# QCOM support
 BOARD_USES_QCOM_HARDWARE := true
+
+# Power
 TARGET_POWERHAL_VARIANT := qcom
 
-# Radio
+# RIL
 TARGET_RIL_VARIANT := caf
 
 # Recovery
-BOARD_HAS_LARGE_FILESYSTEM := true
-TARGET_RECOVERY_FSTAB := $(VENDOR_PATH)/rootdir/etc/fstab.qcom
-TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
-#TARGET_KERNEL_HAVE_EXFAT := true
-
-# SELinux
-include device/qcom/sepolicy/sepolicy.mk
-BOARD_SEPOLICY_DIRS += $(VENDOR_PATH)/sepolicy
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/fstab.qcom
+TARGET_RECOVERY_UI_LIB := librecovery_ui_msm
+TARGET_RECOVERY_UPDATER_LIBS := librecovery_updater_msm
+TARGET_RELEASETOOLS_EXTENSIONS := device/qcom/common
 
 # Sensors
 USE_SENSOR_MULTI_HAL := true
 
-# GPS
-#BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := default
-#TARGET_NO_RPC := true
-#USE_DEVICE_SPECIFIC_GPS := true
+# SELinux
+BOARD_SEPOLICY_DIRS += \
+    $(DEVICE_PATH)/sepolicy
+include device/qcom/sepolicy/sepolicy.mk
 
-# Wifi
+# Time
+BOARD_USES_QC_TIME_SERVICES := true
+
+# Wi-Fi
 BOARD_HAS_QCOM_WLAN := true
 BOARD_HAS_QCOM_WLAN_SDK := true
 BOARD_WLAN_DEVICE := qcwcn
@@ -214,13 +212,5 @@ TARGET_PROVIDES_WCNSS_QMI        := true
 TARGET_USES_QCOM_WCNSS_QMI       := true
 TARGET_USES_WCNSS_CTRL           := true
 
-# Enable dexpreopt to speed boot time
-ifeq ($(HOST_OS),linux)
-  ifeq ($(call match-word-in-list,$(TARGET_BUILD_VARIANT),user),true)
-    ifeq ($(WITH_DEXPREOPT),)
-      WITH_DEXPREOPT := true
-    endif
-  endif
-endif
-
-
+# Inherit the proprietary files
+-include vendor/xiaomi/land/BoardConfigVendor.mk
