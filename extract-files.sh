@@ -17,7 +17,7 @@
 
 set -e
 
-DEVICE=Z01B_1
+DEVICE=Z01B
 VENDOR=asus
 
 # Load extractutils and do some sanity checks
