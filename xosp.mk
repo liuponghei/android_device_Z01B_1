@@ -15,9 +15,10 @@
 $(call inherit-product, device/asus/Z01B/full_Z01B.mk)
 
 ## Device identifier. This must come after all inclusions
-PRODUCT_DEVICE := Z01B
 PRODUCT_NAME := xosp_Z01B
+PRODUCT_DEVICE := Z01B
 PRODUCT_BRAND := XOSP
+PRODUCT_MODEL := Z01B
 PRODUCT_MANUFACTURER := asus
 
 PRODUCT_SYSTEM_PROPERTY_BLACKLIST := ro.product.name
