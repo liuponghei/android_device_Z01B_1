@@ -672,4 +672,4 @@ PRODUCT_PACKAGES += ZenfoneDoze
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 
-$(call inherit-product, vendor/cm/config/common_full_phone.mk)
+$(call inherit-product, vendor/xosp/config/xosp.mk)
