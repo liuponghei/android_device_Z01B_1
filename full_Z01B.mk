@@ -15,10 +15,10 @@
 #
 $(call inherit-product, device/asus/Z01B/device.mk)
 
-PRODUCT_NAME := full_Z01B
+PRODUCT_NAME := xosp_Z01B
 PRODUCT_DEVICE := Z01B
-PRODUCT_BRAND := Android
+PRODUCT_BRAND := XOSP
 PRODUCT_MODEL := Z01B
 PRODUCT_MANUFACTURER := asus
 
-$(call inherit-product-if-exists, vendor/asus/Z01B/Z01B-vendor.mk)
+
