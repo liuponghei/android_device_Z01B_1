@@ -15,7 +15,7 @@
 #
 
 # Use the non-open-source parts, if they're present
--include vendor/asus/Z01B/BoardConfigVendor.mk
+$(call inherit-product, vendor/xosp/config/common_full_phone.mk)
 
 
 VENDOR_PATH := device/asus/Z01B
