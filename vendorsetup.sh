@@ -15,3 +15,4 @@
 #
 
 add_lunch_combo full_Z01B-userdebug
+add_lunch_combo xosp_Z01B-userdebug
