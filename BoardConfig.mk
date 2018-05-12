@@ -25,7 +25,7 @@ BOARD_VENDOR := asus-qcom
 TARGET_SPECIFIC_HEADER_PATH := $(VENDOR_PATH)/include
 
 # Asserts
-TARGET_OTA_ASSERT_DEVICE := Z01B_1
+TARGET_OTA_ASSERT_DEVICE := Z01B
 
 # Use Snapdragon LLVM, if available
 TARGET_USE_SDCLANG := true
@@ -214,7 +214,7 @@ TARGET_USES_WCNSS_CTRL           := true
 
 # Enable dexpreopt to speed boot time
 ifeq ($(HOST_OS),linux)
-  ifeq ($(call match-word-in-list,$(TARGET_BUILD_VARIANT),user),true)
+  ifeq ($(call match-word-in-list,$(TARGET_BUILD_VARIANT),userdebug),true)
     ifeq ($(WITH_DEXPREOPT),)
       WITH_DEXPREOPT := true
     endif
